@@ -27,6 +27,7 @@ class Comment(models.Model):
 
 
 class Genres(models.Model):
+
     name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -49,3 +50,6 @@ class Episode(models.Model):
 
     def __str__(self):
         return f'{self.season.anime.title} - Season {self.season.season_number}, Episode {self.episode_number}'
+
+
+

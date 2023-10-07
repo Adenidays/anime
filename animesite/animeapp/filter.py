@@ -11,8 +11,6 @@ class AnimeListFilter(django_filters.FilterSet):
         fields = ['genres']
 
     def filter_genres(self, queryset, name, value):
-
         genres = value.split(',')
-
 
         return queryset.filter(gener__name__in=genres).distinct()

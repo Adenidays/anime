@@ -4,7 +4,6 @@ from rest_framework import viewsets, generics, status
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from animeapp.config import CustomPagination, IsAdminOrStaffUser
-from animeapp.filter import AnimeListFilter
 from animeapp.serializers import *
 from rest_framework import viewsets, permissions
 
@@ -41,7 +40,7 @@ class AnimeListView(generics.ListAPIView):
     queryset = AnimeList.objects.all()
     serializer_class = AnimeListSerializer
     pagination_class = CustomPagination
-    filter_class = AnimeListFilter
+    filter_backends = [GenreFilter]
 
 
 class AnimeListDetailView(RetrieveAPIView):
