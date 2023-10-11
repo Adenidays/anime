@@ -92,3 +92,8 @@ class EpisodeDeleteView(generics.DestroyAPIView):
     queryset = Episode.objects.all()
     serializer_class = EpisodeSerializer
     permission_classes = [IsAdminOrStaffUser]
+
+
+class AnimeRatingViewSet(viewsets.ModelViewSet):
+    queryset = AnimeRating.objects.all()
+    serializer_class = AnimeRatingSerializer

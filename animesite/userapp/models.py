@@ -27,8 +27,9 @@ class User(AbstractUser):
     email = models.EmailField("Email", unique=True)
     created_at = models.DateTimeField('Created', auto_now_add=True)
     username = models.CharField("User Name", max_length=255, blank=True, null=True)
+    user_img = models.ImageField()
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['username','user_img']
 
     objects = CustomUserManager()
 

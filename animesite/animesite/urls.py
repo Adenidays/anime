@@ -6,6 +6,4 @@ urlpatterns = [
     path('', include('animeapp.urls')),
     path('api/auth/', include('djoser.urls')),
     re_path(f'^auth/', include('djoser.urls.authtoken')),
-
 ]
-

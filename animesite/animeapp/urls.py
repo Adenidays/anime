@@ -11,4 +11,5 @@ urlpatterns = [
     path('comment/delete/<int:pk>/', CommentDeleteView.as_view(), name='delete-comment'),
     path('season/delete/<int:pk>/', SeasonDeleteView.as_view(), name='delete-season'),
     path('episode/delete/<int:pk>/', EpisodeDeleteView.as_view(), name='delete-episode'),
+    path('anime/vote/', AnimeRatingViewSet.as_view({'post': 'create'}), name='vote')
 ]

@@ -42,3 +42,9 @@ class GenreFilter(filters.BaseFilterBackend):
         if genre_names:
             queryset = queryset.filter(gener__name__in=genre_names)
         return queryset
+
+
+class AnimeRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnimeRating
+        fields = '__all__'
