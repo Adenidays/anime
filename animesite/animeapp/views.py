@@ -52,6 +52,7 @@ class SeasonViewSet(viewsets.ModelViewSet):
     queryset = Season.objects.all()
     serializer_class = SeasonSerializer
     http_method_names = ['post', 'put', 'delete']
+    permission_classes = [IsStaffPermission]
 
 
 class EpisodeViewSet(viewsets.ModelViewSet):
@@ -97,3 +98,4 @@ class EpisodeDeleteView(generics.DestroyAPIView):
 class AnimeRatingViewSet(viewsets.ModelViewSet):
     queryset = AnimeRating.objects.all()
     serializer_class = AnimeRatingSerializer
+    permission_classes = [IsAuthenticated]

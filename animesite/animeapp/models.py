@@ -15,7 +15,6 @@ class AnimeList(models.Model):
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
 
     def update_average_rating(self):
-        # Calculate the average rating based on related AnimeRating objects
         average_rating = self.anime_ratings.aggregate(Avg('rating'))['rating__avg']
         if average_rating is not None:
             self.rating = round(average_rating, 2)
@@ -44,16 +43,15 @@ class Genres(models.Model):
 
 
 class Season(models.Model):
-    anime = models.ForeignKey(AnimeList, on_delete=models.CASCADE)
+    anime = models.ForeignKey(AnimeList, on_delete=models.CASCADE, related_name='seasons')
     season_number = models.PositiveIntegerField()
     name = models.CharField(max_length=255)
-
     def __str__(self):
         return f'{self.anime.title} - Season {self.season_number}: {self.name}'
 
 
 class Episode(models.Model):
-    season = models.ForeignKey(Season, on_delete=models.CASCADE)
+    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='episodes')
     episode_number = models.PositiveIntegerField()
     video_file = models.FileField(upload_to='episode_videos/')
 
@@ -63,16 +61,19 @@ class Episode(models.Model):
 
 class AnimeRating(models.Model):
     RATING_CHOICES = [
-        (1, '1 - Awful'),
-        (2, '2 - Poor'),
-        (3, '3 - Average'),
-        (4, '4 - Good'),
-        (5, '5 - Excellent'),
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
     ]
 
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     anime = models.ForeignKey(AnimeList, on_delete=models.CASCADE, related_name='anime_ratings')
     rating = models.PositiveIntegerField(choices=RATING_CHOICES)
+
+    class Meta:
+        unique_together = ['user', 'anime']
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

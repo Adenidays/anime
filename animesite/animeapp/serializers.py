@@ -9,24 +9,27 @@ class GenresSerializer(serializers.ModelSerializer):
         model = Genres
         fields = ('name',)
 
-
-class AnimeListSerializer(serializers.ModelSerializer):
-    gener = GenresSerializer(many=True, read_only=True)
-
+class EpisodeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = AnimeList
+        model = Episode
         fields = '__all__'
 
-
 class SeasonSerializer(serializers.ModelSerializer):
+    episodes = EpisodeSerializer(many=True, read_only=True)
+
     class Meta:
         model = Season
         fields = '__all__'
 
 
-class EpisodeSerializer(serializers.ModelSerializer):
+
+
+class AnimeListSerializer(serializers.ModelSerializer):
+    gener = GenresSerializer(many=True, read_only=True)
+    seasons = SeasonSerializer(many=True, read_only=True)
+
     class Meta:
-        model = Episode
+        model = AnimeList
         fields = '__all__'
 
 
@@ -48,3 +51,13 @@ class AnimeRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnimeRating
         fields = '__all__'
+
+    def validate(self, data):
+        user = self.context['request'].user
+        anime = data.get('anime')
+
+        # Check if the user has already rated the anime
+        if AnimeRating.objects.filter(user=user, anime=anime).exists():
+            raise serializers.ValidationError("You have already rated this anime.")
+
+        return data
