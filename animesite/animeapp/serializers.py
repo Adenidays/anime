@@ -9,10 +9,12 @@ class GenresSerializer(serializers.ModelSerializer):
         model = Genres
         fields = ('name',)
 
+
 class EpisodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Episode
         fields = '__all__'
+
 
 class SeasonSerializer(serializers.ModelSerializer):
     episodes = EpisodeSerializer(many=True, read_only=True)
@@ -22,20 +24,22 @@ class SeasonSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CommentSerializer(serializers.ModelSerializer):
+  
+    user_username = serializers.ReadOnlyField(source='user.username')
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'text', 'created_at', 'user', 'user_username', 'anime')
 
 
 class AnimeListSerializer(serializers.ModelSerializer):
     gener = GenresSerializer(many=True, read_only=True)
     seasons = SeasonSerializer(many=True, read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
         model = AnimeList
-        fields = '__all__'
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
         fields = '__all__'
 
 
@@ -56,7 +60,6 @@ class AnimeRatingSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         anime = data.get('anime')
 
-        # Check if the user has already rated the anime
         if AnimeRating.objects.filter(user=user, anime=anime).exists():
             raise serializers.ValidationError("You have already rated this anime.")
 
