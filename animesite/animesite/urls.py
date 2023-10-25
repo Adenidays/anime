@@ -5,5 +5,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('animeapp.urls')),
     path('api/auth/', include('djoser.urls')),
-    re_path(f'^auth/', include('djoser.urls.authtoken'))
+    re_path(f'^auth/', include('djoser.urls.authtoken')),
+    path('',include('userapp.urls'))
 ]
