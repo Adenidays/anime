@@ -22,3 +22,10 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 class ChangeUsernameSerializer(serializers.Serializer):
     new_username = serializers.CharField(required=True)
+
+
+class ChangeEmailSerializer(serializers.Serializer):
+    old_email = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)
+    confirm_password = serializers.CharField(required=True)
+    new_email = serializers.CharField(required=True)
