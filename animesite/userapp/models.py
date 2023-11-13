@@ -4,32 +4,33 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager, Group, Per
 from animeapp.models import AnimeList
 
 
+from django.contrib.auth.models import BaseUserManager
+
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, password=None, username=None):
+    def create_user(self, email, password=None, username=None, image=None, **extra_fields):
         if not email:
             raise ValueError('The email is required to create this user')
         email = self.normalize_email(email)
-        user = self.model(email=email, username=username, is_staff=False, is_active=True, is_superuser=False)
+        user = self.model(email=email, username=username, image=image, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None):
-        user = self.create_user(email, password)
+    def create_superuser(self, email, password=None, username=None, image=None, **extra_fields):
+        user = self.create_user(email, password, username=username, image=image, **extra_fields)
         user.is_staff = True
         user.is_active = True
         user.is_superuser = True
         user.save(using=self._db)
         return user
 
-
 class User(AbstractUser):
     email = models.EmailField("Email", unique=True)
     created_at = models.DateTimeField('Created', auto_now_add=True)
     username = models.CharField("User Name", max_length=255, blank=True, null=True)
-    user_img = models.ImageField()
+    image = models.ImageField(blank=True, null=True)
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username','user_img']
+    REQUIRED_FIELDS = ['username', 'user_img']
 
     objects = CustomUserManager()
 
@@ -68,7 +69,7 @@ class WishList(models.Model):
     anime = models.ForeignKey(AnimeList, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.user.user_name}'s Wishlist Entry"
+        return f"{self.user.username}'s Wishlist Entry"
 
     class Meta:
         unique_together = ('user', 'anime')

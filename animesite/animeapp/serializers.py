@@ -24,14 +24,19 @@ class SeasonSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+# serializers.py
 class CommentSerializer(serializers.ModelSerializer):
-  
     user_username = serializers.ReadOnlyField(source='user.username')
+    replies = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ('id', 'text', 'created_at', 'user', 'user_username', 'anime')
+        fields = ('id', 'text', 'created_at', 'user', 'user_username', 'anime', 'replies')
 
+    def get_replies(self, obj):
+        replies = Comment.objects.filter(parent_comment=obj)
+        serializer = CommentSerializer(replies, many=True)
+        return serializer.data
 
 class AnimeListSerializer(serializers.ModelSerializer):
     gener = GenresSerializer(many=True, read_only=True)

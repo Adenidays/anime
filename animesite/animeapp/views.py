@@ -69,7 +69,12 @@ class CommentCreateAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        parent_comment_id = self.request.data.get('parent_comment')
+        if parent_comment_id:
+            parent_comment = Comment.objects.get(pk=parent_comment_id)
+            serializer.save(user=self.request.user, parent_comment=parent_comment)
+        else:
+            serializer.save(user=self.request.user)
 
 
 class AnimeListDeleteView(generics.DestroyAPIView):
