@@ -3,8 +3,8 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager, Group, Per
 
 from animeapp.models import AnimeList
 
-
 from django.contrib.auth.models import BaseUserManager
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, username=None, image=None, **extra_fields):
@@ -24,13 +24,14 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+
 class User(AbstractUser):
     email = models.EmailField("Email", unique=True)
     created_at = models.DateTimeField('Created', auto_now_add=True)
     username = models.CharField("User Name", max_length=255, blank=True, null=True)
     image = models.ImageField(blank=True, null=True)
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'user_img']
+    REQUIRED_FIELDS = ['username', ]
 
     objects = CustomUserManager()
 
@@ -51,6 +52,7 @@ class AnimeCollection(models.Model):
     name = models.CharField(max_length=255, null=False, unique=True)
     subscribers = models.PositiveIntegerField(default=0)
     anime = models.ManyToManyField(AnimeList)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.name

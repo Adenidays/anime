@@ -47,6 +47,7 @@ class Season(models.Model):
     anime = models.ForeignKey(AnimeList, on_delete=models.CASCADE, related_name='seasons')
     season_number = models.PositiveIntegerField()
     name = models.CharField(max_length=255)
+
     def __str__(self):
         return f'{self.anime.title} - Season {self.season_number}: {self.name}'
 
@@ -54,7 +55,7 @@ class Season(models.Model):
 class Episode(models.Model):
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='episodes')
     episode_number = models.PositiveIntegerField()
-    video_file = models.FileField(upload_to='episode_videos/')
+    video = models.CharField(max_length=255)
 
     def __str__(self):
         return f'{self.season.anime.title} - Season {self.season.season_number}, Episode {self.episode_number}'

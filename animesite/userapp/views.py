@@ -1,8 +1,12 @@
-from rest_framework import status
+from django.db.models import F
+from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from userapp.serializers import ChangePasswordSerializer, ChangeUsernameSerializer, ChangeEmailSerializer
+
+from userapp.models import WishList, AnimeCollection
+from userapp.serializers import ChangePasswordSerializer, ChangeUsernameSerializer, ChangeEmailSerializer, \
+    WishListSerializer, WishListCreateSerializer, AnimeCollectionSerializer
 
 
 class ChangePasswordView(APIView):
@@ -74,3 +78,45 @@ class ChangeEmailView(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class WishListView(generics.ListCreateAPIView):
+    queryset = WishList.objects.all()
+    serializer_class = WishListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return WishListCreateSerializer
+        return WishListSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class UserWishListView(generics.ListAPIView):
+    serializer_class = WishListSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        return WishList.objects.filter(user_id=user_id)
+
+
+class AnimeCollectionCreateView(generics.CreateAPIView):
+    serializer_class = AnimeCollectionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+
+
+class CollectionListView(generics.ListAPIView):
+    serializer_class = AnimeCollectionSerializer
+
+    def get_queryset(self):
+        queryset = AnimeCollection.objects.all()
+
+        if self.request.query_params.get('popular'):
+            queryset = queryset.annotate(subscribers_count=F('subscribers')).order_by('-subscribers_count')
+
+        return queryset.prefetch_related('anime')
