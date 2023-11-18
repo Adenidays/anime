@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from animeapp.models import AnimeRating, Comment, AnimeList
 from animeapp.serializers import AnimeRatingSerializer, CommentSerializer, AnimeListSerializer
-from userapp.models import WishList, AnimeCollection
+from userapp.models import WishList, AnimeCollection, UserSubscription
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
@@ -84,8 +84,6 @@ class WishListCreateSerializer(serializers.ModelSerializer):
         return data
 
 
-
-
 class AnimeCollectionSerializer(serializers.ModelSerializer):
     anime = AnimeListSerializer(many=True)
 
@@ -93,3 +91,13 @@ class AnimeCollectionSerializer(serializers.ModelSerializer):
         model = AnimeCollection
         fields = ['id', 'name', 'subscribers', 'anime', 'creator']
 
+
+class UserSubscriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSubscription
+        fields = ['collection']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        subscription = UserSubscription.objects.create(user=user, **validated_data)
+        return subscription

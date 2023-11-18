@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
-from userapp.models import WishList, AnimeCollection
+from userapp.models import WishList, AnimeCollection, UserSubscription
 from userapp.serializers import ChangePasswordSerializer, ChangeUsernameSerializer, ChangeEmailSerializer, \
-    WishListSerializer, WishListCreateSerializer, AnimeCollectionSerializer
+    WishListSerializer, WishListCreateSerializer, AnimeCollectionSerializer, UserSubscriptionSerializer
 
 
 class ChangePasswordView(APIView):
@@ -115,8 +115,15 @@ class CollectionListView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = AnimeCollection.objects.all()
-
         if self.request.query_params.get('popular'):
             queryset = queryset.annotate(subscribers_count=F('subscribers')).order_by('-subscribers_count')
-
         return queryset.prefetch_related('anime')
+
+
+class SubscribeToCollectionView(generics.CreateAPIView):
+    queryset = UserSubscription.objects.all()
+    serializer_class = UserSubscriptionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save()

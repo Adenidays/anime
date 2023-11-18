@@ -10,4 +10,5 @@ urlpatterns = [
     path('users/<int:user_id>/wishlist/', UserWishListView.as_view(), name='user-wishlist'),
     path('create_collection/', AnimeCollectionCreateView.as_view(), name='create-collection'),
     path('collections/', CollectionListView.as_view(), name='collection-list'),#"?popular=true
+    path('subscribe/', SubscribeToCollectionView.as_view(), name='subscribe-to-collection'),
 ]
