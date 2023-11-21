@@ -24,25 +24,27 @@ class SeasonSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# serializers.py
 class CommentSerializer(serializers.ModelSerializer):
     user_username = serializers.ReadOnlyField(source='user.username')
+    user_image = serializers.SerializerMethodField()
     replies = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ('id', 'text', 'created_at', 'user', 'user_username', 'anime', 'replies')
+        fields = ('id', 'text', 'created_at', 'user', 'user_username', 'user_image', 'anime', 'replies')
+
+    def get_user_image(self, obj):
+
+        return obj.user.image.url if obj.user.image else None
 
     def get_replies(self, obj):
         replies = Comment.objects.filter(parent_comment=obj)
         serializer = CommentSerializer(replies, many=True)
         return serializer.data
-
 class AnimeListSerializer(serializers.ModelSerializer):
     gener = GenresSerializer(many=True, read_only=True)
     seasons = SeasonSerializer(many=True, read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
-
     class Meta:
         model = AnimeList
         fields = '__all__'
@@ -57,6 +59,8 @@ class GenreFilter(filters.BaseFilterBackend):
 
 
 class AnimeRatingSerializer(serializers.ModelSerializer):
+    rating = serializers.IntegerField(min_value=1, max_value=5)
+
     class Meta:
         model = AnimeRating
         fields = '__all__'

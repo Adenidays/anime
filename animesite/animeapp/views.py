@@ -1,6 +1,7 @@
 import json
 from django.shortcuts import render
 from rest_framework import viewsets, generics, status
+from rest_framework.filters import SearchFilter
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from animeapp.config import CustomPagination, IsAdminOrStaffUser
@@ -41,7 +42,8 @@ class AnimeListView(generics.ListAPIView):
     queryset = AnimeList.objects.all()
     serializer_class = AnimeListSerializer
     pagination_class = CustomPagination
-    filter_backends = [GenreFilterBackend,TypeFilterBackend]
+    filter_backends = [GenreFilterBackend, TypeFilterBackend, SearchFilter]
+    search_fields = ['title']
 
 
 class AnimeListDetailView(RetrieveAPIView):
@@ -105,3 +107,21 @@ class AnimeRatingViewSet(viewsets.ModelViewSet):
     queryset = AnimeRating.objects.all()
     serializer_class = AnimeRatingSerializer
     permission_classes = [IsAuthenticated]
+
+
+class AnimeTVListViewSet(viewsets.ModelViewSet):
+    queryset = AnimeList.objects.filter(type='TV')
+    serializer_class = AnimeListSerializer
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('gener', 'seasons__episodes', 'comments__user',
+                                                       'anime_ratings__user')
+
+
+class AnimeMovieListViewSet(viewsets.ModelViewSet):
+    queryset = AnimeList.objects.filter(type='Movie')
+    serializer_class = AnimeListSerializer
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('gener', 'seasons__episodes', 'comments__user',
+                                                       'anime_ratings__user')

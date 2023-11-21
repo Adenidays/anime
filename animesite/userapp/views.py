@@ -1,5 +1,6 @@
 from django.db.models import F
 from rest_framework import status, generics, permissions
+from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -120,10 +121,20 @@ class CollectionListView(generics.ListAPIView):
         return queryset.prefetch_related('anime')
 
 
-class SubscribeToCollectionView(generics.CreateAPIView):
+class SubscribeToCollectionView(CreateAPIView):
     queryset = UserSubscription.objects.all()
     serializer_class = UserSubscriptionSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
+        user = self.request.user
+        collection = serializer.validated_data['collection']
+
+        if UserSubscription.objects.filter(user=user, collection=collection).exists():
+            return Response({"error": "User is already subscribed to this collection."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        collection.subscribers += 1
+        collection.save()
+
         serializer.save()
