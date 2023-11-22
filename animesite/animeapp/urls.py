@@ -2,6 +2,9 @@ from django.urls import path
 from .views import *
 from django.conf import settings
 from django.conf.urls.static import static
+
+
+
 urlpatterns = [
     path('api/anime/', AnimeListView.as_view(), name='anime-list'),
     path('api/anime/<int:pk>', AnimeListDetailView.as_view(), name='anime-detail'),

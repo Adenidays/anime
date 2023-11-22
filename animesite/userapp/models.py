@@ -29,7 +29,7 @@ class User(AbstractUser):
     email = models.EmailField("Email", unique=True)
     created_at = models.DateTimeField('Created', auto_now_add=True)
     username = models.CharField("User Name", max_length=255, blank=True, null=True)
-    image = models.ImageField(upload_to='user_images/', blank=True, null=True)
+    image = models.ImageField(upload_to=f'avatars/{email}', blank=True, null=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]
 

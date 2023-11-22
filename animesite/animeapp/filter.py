@@ -15,3 +15,4 @@ class TypeFilterBackend(filters.BaseFilterBackend):
         if anime_type:
             queryset = queryset.filter(type=anime_type)
         return queryset
+

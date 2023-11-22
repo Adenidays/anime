@@ -34,17 +34,19 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'created_at', 'user', 'user_username', 'user_image', 'anime', 'replies')
 
     def get_user_image(self, obj):
-
         return obj.user.image.url if obj.user.image else None
 
     def get_replies(self, obj):
         replies = Comment.objects.filter(parent_comment=obj)
         serializer = CommentSerializer(replies, many=True)
         return serializer.data
+
+
 class AnimeListSerializer(serializers.ModelSerializer):
     gener = GenresSerializer(many=True, read_only=True)
     seasons = SeasonSerializer(many=True, read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
+
     class Meta:
         model = AnimeList
         fields = '__all__'

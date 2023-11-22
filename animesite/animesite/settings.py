@@ -11,8 +11,6 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
-    'animeapp',
-    'userapp',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -23,7 +21,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'rest_framework.authtoken',
+    "drf_spectacular",
     'djoser',
+    'animeapp',
+    'userapp',
 ]
 
 MIDDLEWARE = [
@@ -113,11 +114,10 @@ SIMPLE_JWT = {
 }
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.TokenAuthentication'
     ],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend',
                                 'rest_framework.filters.SearchFilter'],
@@ -127,10 +127,20 @@ DJOSER = {
         'user_create': 'userapp.serializers.CustomUserCreateSerializer',
         'user': 'userapp.serializers.CustomUserSerializer',
     },
-
+    'LOGIN_FIELD': 'email',
+    'USER_CREATE_PASSWORD_RETYPE': True,
 }
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "API",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SCHEMA_PATH_PREFIX": r"/api/v[0-9]",
+}
+
+
+
 CORS_ALLOW_ALL_ORIGINS = True
 
 LANGUAGE_CODE = 'en-us'
@@ -141,8 +151,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
 AUTH_USER_MODEL = 'userapp.User'

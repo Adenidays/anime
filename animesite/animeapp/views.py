@@ -1,8 +1,8 @@
 import json
 from django.shortcuts import render
-from rest_framework import viewsets, generics, status
+from rest_framework import generics
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import RetrieveAPIView
+
 from rest_framework.permissions import IsAuthenticated
 from animeapp.config import CustomPagination, IsAdminOrStaffUser
 from animeapp.filter import GenreFilterBackend, TypeFilterBackend
@@ -39,14 +39,21 @@ def import_data_from_json(request):
 
 
 class AnimeListView(generics.ListAPIView):
-    queryset = AnimeList.objects.all()
     serializer_class = AnimeListSerializer
     pagination_class = CustomPagination
     filter_backends = [GenreFilterBackend, TypeFilterBackend, SearchFilter]
     search_fields = ['title']
 
+    def get_queryset(self):
+        queryset = AnimeList.objects.all()
+        top_rated = self.request.query_params.get('top_rated', None)
+        if top_rated:
+            queryset = queryset.order_by('-rating')[:100]
 
-class AnimeListDetailView(RetrieveAPIView):
+        return queryset
+
+
+class AnimeListDetailView(generics.RetrieveAPIView):
     queryset = AnimeList.objects.all()
     serializer_class = AnimeListSerializer
 

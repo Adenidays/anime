@@ -138,3 +138,4 @@ class SubscribeToCollectionView(CreateAPIView):
         collection.save()
 
         serializer.save()
+
